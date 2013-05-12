@@ -21088,15 +21088,32 @@ recubed.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.inne
 recubed.scene = new THREE.Scene;
 recubed.projector = new THREE.Projector;
 recubed.renderer = new THREE.WebGLRenderer;
+recubed.position = {"x":0, "y":0};
+recubed.end_pos = {"x":Math.PI, "y":Math.PI};
+recubed.tween = function() {
+  var G__10193 = new TWEEN.Tween(recubed.position);
+  G__10193.to(recubed.end_pos, 5E3);
+  G__10193.easing(TWEEN.Easing.Elastic.InOut);
+  G__10193.repeat(Number.POSITIVE_INFINITY);
+  return G__10193
+}();
+recubed.update_rotation = function update_rotation() {
+  var pos = recubed.cube.rotation;
+  pos.y = recubed.position.y;
+  return pos.x = recubed.position.x
+};
 recubed.init = function init() {
   recubed.scene.add(recubed.camera);
   recubed.camera.position.set(0, 0, 200);
   recubed.renderer.setSize(window.innerWidth, window.innerHeight);
-  return document.body.appendChild(recubed.renderer.domElement)
+  document.body.appendChild(recubed.renderer.domElement);
+  recubed.tween.onUpdate(recubed.update_rotation);
+  return recubed.tween.start()
 };
 goog.exportSymbol("recubed.init", recubed.init);
 recubed.animate = function animate() {
   requestAnimationFrame(animate);
+  TWEEN.update.call(null);
   return recubed.renderer.render(recubed.scene, recubed.camera)
 };
 recubed.add_cube = function add_cube() {
@@ -21104,9 +21121,10 @@ recubed.add_cube = function add_cube() {
   var height = 20;
   var length = 20;
   var cube_geo = new THREE.CubeGeometry(width, height, length);
-  var m_params = {"color":2640766};
+  var m_params = {"color":2640766, "wireframe":true, "transparent":true};
   var material = new THREE.MeshBasicMaterial(m_params);
   var cube_mesh = new THREE.Mesh(cube_geo, material);
+  recubed.cube = cube_mesh;
   return recubed.scene.add(cube_mesh)
 };
 recubed.render = function render() {
