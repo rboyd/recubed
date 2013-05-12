@@ -487,6 +487,19 @@ goog.base = function(me, opt_methodName, var_args) {
 goog.scope = function(fn) {
   fn.call(goog.global)
 };
+goog.provide("goog.debug.Error");
+goog.debug.Error = function(opt_msg) {
+  if(Error.captureStackTrace) {
+    Error.captureStackTrace(this, goog.debug.Error)
+  }else {
+    this.stack = (new Error).stack || ""
+  }
+  if(opt_msg) {
+    this.message = String(opt_msg)
+  }
+};
+goog.inherits(goog.debug.Error, Error);
+goog.debug.Error.prototype.name = "CustomError";
 goog.provide("goog.string");
 goog.provide("goog.string.Unicode");
 goog.string.Unicode = {NBSP:"\u00a0"};
@@ -927,19 +940,6 @@ goog.string.parseInt = function(value) {
   }
   return NaN
 };
-goog.provide("goog.debug.Error");
-goog.debug.Error = function(opt_msg) {
-  if(Error.captureStackTrace) {
-    Error.captureStackTrace(this, goog.debug.Error)
-  }else {
-    this.stack = (new Error).stack || ""
-  }
-  if(opt_msg) {
-    this.message = String(opt_msg)
-  }
-};
-goog.inherits(goog.debug.Error, Error);
-goog.debug.Error.prototype.name = "CustomError";
 goog.provide("goog.asserts");
 goog.provide("goog.asserts.AssertionError");
 goog.require("goog.debug.Error");
@@ -21084,7 +21084,34 @@ cljs.core.UUID.prototype.toString = function() {
 };
 goog.provide("recubed");
 goog.require("cljs.core");
+recubed.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 10, 1E4);
+recubed.scene = new THREE.Scene;
+recubed.projector = new THREE.Projector;
+recubed.renderer = new THREE.WebGLRenderer;
+recubed.init = function init() {
+  recubed.scene.add(recubed.camera);
+  recubed.camera.position.set(0, 0, 200);
+  recubed.renderer.setSize(window.innerWidth, window.innerHeight);
+  return document.body.appendChild(recubed.renderer.domElement)
+};
+goog.exportSymbol("recubed.init", recubed.init);
+recubed.animate = function animate() {
+  requestAnimationFrame(animate);
+  return recubed.renderer.render(recubed.scene, recubed.camera)
+};
+recubed.add_cube = function add_cube() {
+  var width = 20;
+  var height = 20;
+  var length = 20;
+  var cube_geo = new THREE.CubeGeometry(width, height, length);
+  var m_params = {"color":2640766};
+  var material = new THREE.MeshBasicMaterial(m_params);
+  var cube_mesh = new THREE.Mesh(cube_geo, material);
+  return recubed.scene.add(cube_mesh)
+};
 recubed.render = function render() {
-  return console.log("Hello, World!")
+  recubed.init.call(null);
+  recubed.add_cube.call(null);
+  return recubed.animate.call(null)
 };
 goog.exportSymbol("recubed.render", recubed.render);
