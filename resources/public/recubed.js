@@ -21088,14 +21088,15 @@ recubed.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.inne
 recubed.scene = new THREE.Scene;
 recubed.projector = new THREE.Projector;
 recubed.renderer = new THREE.WebGLRenderer;
+recubed.cube = new THREE.Object3D;
 recubed.position = {"x":0, "y":0};
-recubed.end_pos = {"x":Math.PI, "y":Math.PI};
+recubed.end_pos = {"x":2 * Math.PI, "y":2 * Math.PI};
 recubed.tween = function() {
-  var G__10193 = new TWEEN.Tween(recubed.position);
-  G__10193.to(recubed.end_pos, 5E3);
-  G__10193.easing(TWEEN.Easing.Elastic.InOut);
-  G__10193.repeat(Number.POSITIVE_INFINITY);
-  return G__10193
+  var G__11011 = new TWEEN.Tween(recubed.position);
+  G__11011.to(recubed.end_pos, 5E3);
+  G__11011.easing(TWEEN.Easing.Elastic.InOut);
+  G__11011.repeat(Number.POSITIVE_INFINITY);
+  return G__11011
 }();
 recubed.update_rotation = function update_rotation() {
   var pos = recubed.cube.rotation;
@@ -21116,16 +21117,68 @@ recubed.animate = function animate() {
   TWEEN.update.call(null);
   return recubed.renderer.render(recubed.scene, recubed.camera)
 };
-recubed.add_cube = function add_cube() {
-  var width = 20;
-  var height = 20;
-  var length = 20;
+recubed.cubie = function cubie(p__11012, scale) {
+  var vec__11014 = p__11012;
+  var x = cljs.core.nth.call(null, vec__11014, 0, null);
+  var y = cljs.core.nth.call(null, vec__11014, 1, null);
+  var z = cljs.core.nth.call(null, vec__11014, 2, null);
+  var adjusted_scale = 0.8 * scale;
+  var width = adjusted_scale;
+  var height = adjusted_scale;
+  var length = adjusted_scale;
   var cube_geo = new THREE.CubeGeometry(width, height, length);
   var m_params = {"color":2640766, "wireframe":true, "transparent":true};
   var material = new THREE.MeshBasicMaterial(m_params);
   var cube_mesh = new THREE.Mesh(cube_geo, material);
-  recubed.cube = cube_mesh;
-  return recubed.scene.add(cube_mesh)
+  cube_mesh.position["x"] = x;
+  cube_mesh.position["y"] = y;
+  cube_mesh.position["z"] = z;
+  return cube_mesh
+};
+recubed.add_cube = function add_cube() {
+  var G__11018_11021 = cljs.core.seq.call(null, cljs.core.range.call(null, 3));
+  while(true) {
+    if(G__11018_11021) {
+      var x_11022 = cljs.core.first.call(null, G__11018_11021);
+      var G__11019_11023 = cljs.core.seq.call(null, cljs.core.range.call(null, 3));
+      while(true) {
+        if(G__11019_11023) {
+          var y_11024 = cljs.core.first.call(null, G__11019_11023);
+          var G__11020_11025 = cljs.core.seq.call(null, cljs.core.range.call(null, 3));
+          while(true) {
+            if(G__11020_11025) {
+              var z_11026 = cljs.core.first.call(null, G__11020_11025);
+              var cubie_scale_11027 = 5;
+              var pos_11028 = cljs.core.map.call(null, cljs.core.partial.call(null, cljs.core._STAR_, cubie_scale_11027), cljs.core.PersistentVector.fromArray([x_11022, y_11024, z_11026], true));
+              if(!cljs.core._EQ_.call(null, x_11022, y_11024, z_11026, 1)) {
+                recubed.cube.add(recubed.cubie.call(null, pos_11028, cubie_scale_11027));
+                var G__11029 = cljs.core.next.call(null, G__11020_11025);
+                G__11020_11025 = G__11029;
+                continue
+              }else {
+                var G__11030 = cljs.core.next.call(null, G__11020_11025);
+                G__11020_11025 = G__11030;
+                continue
+              }
+            }else {
+            }
+            break
+          }
+          var G__11031 = cljs.core.next.call(null, G__11019_11023);
+          G__11019_11023 = G__11031;
+          continue
+        }else {
+        }
+        break
+      }
+      var G__11032 = cljs.core.next.call(null, G__11018_11021);
+      G__11018_11021 = G__11032;
+      continue
+    }else {
+    }
+    break
+  }
+  return recubed.scene.add(recubed.cube)
 };
 recubed.render = function render() {
   recubed.init.call(null);
